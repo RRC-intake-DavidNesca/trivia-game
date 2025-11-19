@@ -20,13 +20,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const sortSelect = document.getElementById("sort-scores");
     // Cache a reference to the top score summary box.
     const topScoreBox = document.getElementById("top-score");
-    // Cache a reference to the privacy controls (final commit).
+    // Cache a reference to the privacy controls (remember consent).
     const rememberCheckbox = document.getElementById("remember-me");
-    // Cache a reference to the "Forget me" button (final commit).
+    // Cache a reference to the "Forget me" button (privacy control).
     const forgetButton = document.getElementById("forget-me");
 
-    // Prefill the username and sync consent controls from storage.
+    // Define a constant key for the username cookie we use for session.
+    const USERNAME_COOKIE = "triviaUsername";
+
+    // Prefill the username and sync consent controls from localStorage (existing behavior).
     checkUsername();
+    // After populating from localStorage, also load cookie-based session (assignment requirement).
+    checkUserSession();
     // Apply the saved sort preference to the select control.
     applySavedSortPreference();
     // Fetch questions from the API and render them with a loading state.
@@ -38,17 +43,21 @@ document.addEventListener("DOMContentLoaded", function () {
     usernameInput.addEventListener("input", function () {
         // Read and trim the current value to avoid saving stray spaces.
         const value = (usernameInput.value || "").trim();
-        // If user opted in and a value exists, store it; otherwise remove the stored name.
+        // If user opted in and a value exists, store it in localStorage; otherwise remove.
         if (rememberCheckbox.checked && value) {
             // Save the name to localStorage so it can be restored later.
             localStorage.setItem("triviaCurrentUser", value);
             // Show the Forget Me button when a name is stored.
             forgetButton.classList.remove("hidden");
+            // Also store the username in a cookie for assignment’s cookie requirement (30-day expiry).
+            setCookie(USERNAME_COOKIE, value, 30);
         } else {
-            // Remove the stored name when not opted-in or value is empty.
+            // Remove the stored name from localStorage when not opted-in or value is empty.
             localStorage.removeItem("triviaCurrentUser");
             // Hide the Forget Me button accordingly.
             forgetButton.classList.add("hidden");
+            // Also remove the username cookie when not opted-in or empty.
+            eraseCookie(USERNAME_COOKIE);
         }
     });
 
@@ -58,15 +67,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const value = (usernameInput.value || "").trim();
         // If checked and there's a name, store it; otherwise clear it.
         if (rememberCheckbox.checked && value) {
-            // Persist the name with user consent.
+            // Persist the name to localStorage per existing UX.
             localStorage.setItem("triviaCurrentUser", value);
             // Reveal the Forget Me button to allow opting out later.
             forgetButton.classList.remove("hidden");
+            // Persist the name to a cookie to satisfy assignment’s cookie session requirement (30 days).
+            setCookie(USERNAME_COOKIE, value, 30);
         } else {
-            // Remove the stored name when not opted-in or field is empty.
+            // Remove the stored name from localStorage if consent is off or field empty.
             localStorage.removeItem("triviaCurrentUser");
             // Hide the Forget Me button in this case.
             forgetButton.classList.add("hidden");
+            // Remove the username cookie to end the cookie-based session.
+            eraseCookie(USERNAME_COOKIE);
         }
     });
 
@@ -74,6 +87,8 @@ document.addEventListener("DOMContentLoaded", function () {
     forgetButton.addEventListener("click", function () {
         // Remove the persisted name from localStorage.
         localStorage.removeItem("triviaCurrentUser");
+        // Remove the persisted name from the cookie store as well.
+        eraseCookie(USERNAME_COOKIE);
         // Clear the visible input field value.
         usernameInput.value = "";
         // Uncheck the consent checkbox.
@@ -92,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
         displayScores();
     });
 
-    // Document what the fetchQuestions function does in this block comment.
+    // Fetch and display 10 questions from Open Trivia DB.
     /**
      * Fetches trivia questions from the API and displays them.
      */
@@ -120,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Helper that flips visibility between loader and questions.
+    // Toggle the loading skeleton vs the question container.
     /**
      * Toggles the display of the loading state and question container.
      *
@@ -206,7 +221,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Wire up form submit, new player, and clear scores buttons.
     form.addEventListener("submit", handleFormSubmit);
+    // Handle starting a fresh player session.
     newPlayerButton.addEventListener("click", newPlayer);
+    // Handle clearing all stored scores.
     clearScoresButton.addEventListener("click", clearScores);
 
     // Handle the form submission: validate, score, persist, and update UI.
@@ -323,16 +340,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Persist the score to localStorage so it remains across reloads.
         saveScoreToStorage(trimmed, correctSelections, totalQuestions);
-        // Respect consent: if Remember is checked, store the name; otherwise remove it.
+
+        // Respect existing consent UX: if Remember is checked, store the name; otherwise remove it (localStorage).
         if (rememberCheckbox.checked) {
+            // Save the current name under the localStorage key used for prefill.
             localStorage.setItem("triviaCurrentUser", trimmed);
+            // Ensure the Forget Me button is visible in this state.
             forgetButton.classList.remove("hidden");
         } else {
+            // Remove the prefilled name from localStorage when consent is off.
             localStorage.removeItem("triviaCurrentUser");
+            // Hide the Forget Me button to reflect no stored identity.
             forgetButton.classList.add("hidden");
         }
+
+        // Satisfy cookie-based session requirement: set or clear cookie based on consent.
+        if (rememberCheckbox.checked) {
+            // Store the username in a cookie with a 30-day lifetime.
+            setCookie(USERNAME_COOKIE, trimmed, 30);
+        } else {
+            // Remove the username cookie if consent is not given.
+            eraseCookie(USERNAME_COOKIE);
+        }
+
         // Re-render the scoreboard from storage for consistent sorting/formatting.
         displayScores();
+        // Refresh UI elements from cookie state so everything stays in sync.
+        checkUserSession();
 
         // Reveal the New Player button so another attempt can be made.
         newPlayerButton.classList.remove("hidden");
@@ -406,11 +440,17 @@ document.addEventListener("DOMContentLoaded", function () {
         if (scores.length === 0) {
             // Build a single-row placeholder to explain there is no data.
             const emptyTr = document.createElement("tr");
+            // Assign a class to style the empty state.
             emptyTr.className = "empty";
+            // Create a single cell that spans all columns.
             const emptyTd = document.createElement("td");
+            // Make the cell span Player, Score, and Date columns.
             emptyTd.setAttribute("colspan", "3");
+            // Show a helpful message in the empty row.
             emptyTd.textContent = "No scores yet.";
+            // Insert the cell into the row.
             emptyTr.appendChild(emptyTd);
+            // Insert the row into the tbody.
             tbody.appendChild(emptyTr);
             // Disable Clear button because there is nothing to remove.
             clearScoresButton.disabled = true;
@@ -426,17 +466,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Sort the scores according to the chosen preference.
         if (pref === "newest") {
+            // Sort by most recent first using the timestamp.
             scores.sort((a, b) => (b.ts || 0) - (a.ts || 0));
         } else if (pref === "oldest") {
+            // Sort by oldest first using the timestamp.
             scores.sort((a, b) => (a.ts || 0) - (b.ts || 0));
         } else if (pref === "highest") {
+            // Sort by highest percentage, then by most recent for ties.
             scores.sort((a, b) => {
+                // Compute ratios safely to avoid division by zero.
                 const ra = a.total ? a.correct / a.total : 0;
                 const rb = b.total ? b.correct / b.total : 0;
+                // Primary comparison on ratio (descending).
                 if (rb !== ra) return rb - ra;
+                // Tie-break by timestamp (newest first).
                 return (b.ts || 0) - (a.ts || 0);
             });
         } else if (pref === "lowest") {
+            // Sort by lowest percentage, then by oldest for ties.
             scores.sort((a, b) => {
                 const ra = a.total ? a.correct / a.total : 0;
                 const rb = b.total ? b.correct / b.total : 0;
@@ -447,7 +494,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Compute the top percentage across all scores for highlighting.
         let topPercent = scores.reduce((best, s) => {
+            // Compute integer percent for this record.
             const pct = Math.round((s.total ? (s.correct / s.total) : 0) * 100);
+            // Keep the max found so far.
             return pct > best ? pct : best;
         }, 0);
         // Track how many rows reach that top percentage.
@@ -481,22 +530,43 @@ document.addEventListener("DOMContentLoaded", function () {
         // Build the top-score summary and reveal it.
         const label = topCount === 1 ? "player" : "players";
         const summary = "🏆 Top score: " + topPercent + "% (" + topCount + " " + label + ")";
+        // Place summary text in the UI.
         topScoreBox.textContent = summary;
+        // Ensure the summary box is visible.
         topScoreBox.classList.remove("hidden");
     }
 
-    // Prefill the username from localStorage and sync privacy controls.
+    // Prefill the username from localStorage and sync privacy controls (existing helper).
     function checkUsername() {
         // Read any saved name for the current user from localStorage.
         const stored = localStorage.getItem("triviaCurrentUser");
         // If a stored value exists, place it into the input and reflect consent.
         if (stored) {
+            // Prefill with stored value from localStorage.
             usernameInput.value = stored;
+            // Mark consent as on because a stored identity exists locally.
             rememberCheckbox.checked = true;
+            // Show Forget Me button in this state.
             forgetButton.classList.remove("hidden");
         } else {
+            // If nothing stored, ensure controls reflect that.
             rememberCheckbox.checked = false;
             forgetButton.classList.add("hidden");
+        }
+    }
+
+    // Check cookie-based session and reflect it in the UI (assignment Step 4).
+    function checkUserSession() {
+        // Read the username from the cookie store (empty string if not set).
+        const cookieName = getCookie(USERNAME_COOKIE);
+        // If a cookie value exists, mirror it into the input and controls.
+        if (cookieName) {
+            // Prefill input from cookie value.
+            usernameInput.value = cookieName;
+            // Consider consent granted for remembering on this device.
+            rememberCheckbox.checked = true;
+            // Show Forget Me.
+            forgetButton.classList.remove("hidden");
         }
     }
 
@@ -504,10 +574,13 @@ document.addEventListener("DOMContentLoaded", function () {
     function newPlayer() {
         // Clear the name input field.
         usernameInput.value = "";
-        // Remove the saved name unless the user keeps consent and types again.
+        // Remove the saved name from localStorage unless the user types again with consent.
         localStorage.removeItem("triviaCurrentUser");
+        // Also clear the username cookie to reset cookie-based session.
+        eraseCookie(USERNAME_COOKIE);
         // Clear consent controls to default off.
         rememberCheckbox.checked = false;
+        // Hide the forget button since nothing is stored now.
         forgetButton.classList.add("hidden");
         // Re-enable the submit button for the next attempt.
         document.getElementById("submit-game").disabled = false;
@@ -533,9 +606,44 @@ document.addEventListener("DOMContentLoaded", function () {
         const ok = window.confirm("Clear all saved scores? This cannot be undone.");
         // If confirmed, clear and re-render the scoreboard.
         if (ok) {
+            // Remove the scores array from localStorage.
             localStorage.removeItem("scores");
+            // Repaint the table / empty state now that data is gone.
             displayScores();
         }
+    }
+
+    // Store a cookie named `name` with string `value` that expires in `days` days (assignment Step 3).
+    function setCookie(name, value, days) {
+        // Create a new Date for computing expiration.
+        const d = new Date();
+        // Add the requested days to the current time (in milliseconds).
+        d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+        // Build and set the cookie with encoded value, expiry, and path.
+        document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + d.toUTCString() + ";path=/";
+    }
+
+    // Retrieve the value of a cookie by `name` (assignment Step 3).
+    function getCookie(name) {
+        // Prepare the prefix to match at the start of each cookie pair.
+        const prefix = name + "=";
+        // Split all cookies into an array by semicolons.
+        const parts = document.cookie.split(";");
+        // Check each cookie pair for a matching prefix.
+        for (let i = 0; i < parts.length; i++) {
+            // Trim whitespace for robust matching.
+            const c = parts[i].trim();
+            // If this cookie starts with the prefix, return the decoded value.
+            if (c.indexOf(prefix) === 0) return decodeURIComponent(c.substring(prefix.length));
+        }
+        // Return empty string if not found.
+        return "";
+    }
+
+    // Remove a cookie immediately by setting an expired date (assignment Step 3).
+    function eraseCookie(name) {
+        // Overwrite the cookie with a past expiration date and same path.
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
     }
 });
 // End of DOMContentLoaded handler.
