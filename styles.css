@@ -1,274 +1,317 @@
-/* Utility class to fully hide elements */
+/* Create a utility class to hide elements from layout and visibility */
 .hidden {
-    /* Remove element from layout/visibility */
+    /* Remove the element from the document flow and hide it */
     display: none;
 }
 
-/* Pulse animation for loader skeletons */
+/* Animate skeleton elements inside the loading container for a pulsing effect */
 #loading-container .skeleton {
-    /* Run loading animation indefinitely */
+    /* Apply the pulsing loading animation on a loop */
     animation: loading 1.5s infinite ease-in-out;
 }
 
-/* Optional shimmer keyframes kept for reference */
+/* Define a shimmer animation block (kept for potential use) */
 @keyframes shimmer {
-    /* Start shimmer from left */
+    /* Start with the background positioned left */
     0% {
-        /* Position background to left */
+        /* Place the background off the left side */
         background-position: -100%;
     }
-    /* End shimmer to right */
+    /* End with the background positioned right */
     100% {
-        /* Position background to right */
+        /* Move the background across to the right side */
         background-position: 100%;
     }
 }
 
-/* Base skeleton block styling */
+/* Base skeleton styling for loading placeholders */
 .skeleton {
-    /* Neutral placeholder color */
+    /* Set a neutral gray background color */
     background-color: #e0e0e0;
-    /* Slightly rounded corners */
+    /* Round corners slightly for a modern look */
     border-radius: 0.25rem;
-    /* Vertical spacing between skeletons */
+    /* Add vertical spacing between skeleton blocks */
     margin: 0.625rem 0;
 }
 
-/* Skeleton size for option-like blocks */
+/* Size the option‑style skeleton to look like a question/answers area */
 .skeleton-option {
-    /* Height similar to question block */
+    /* Give the skeleton a tall height to mimic content */
     height: 8em;
 }
 
-/* Keyframes for gray pulsing effect */
+/* Define the pulsing color animation for the skeleton blocks */
 @keyframes loading {
-    /* Start gray */
+    /* Start with the base gray tone */
     0% {
+        /* Use the base gray color */
         background-color: #e0e0e0;
     }
-    /* Lighter mid-pulse */
+    /* Lighten mid‑animation for a pulse effect */
     50% {
+        /* Use a lighter gray to simulate motion */
         background-color: #f0f0f0;
     }
-    /* Return to start gray */
+    /* Return to the base gray at the end of the cycle */
     100% {
+        /* Reset to the initial gray color */
         background-color: #e0e0e0;
     }
 }
 
-/* Global text and page colors */
+/* Set base typography and colors for the whole page */
 body {
-    /* Clean sans-serif stack */
+    /* Use Roboto with sensible sans‑serif fallbacks */
     font-family: "Roboto", sans-serif;
-    /* Light page background */
+    /* Apply a light gray page background behind the card */
     background-color: #f5f5f5;
-    /* High-contrast text color */
+    /* Use a dark text color for readable contrast */
     color: #333;
 }
 
-/* Card-style container for the app */
+/* Constrain and style the main game container card */
 #game-container {
-    /* Limit width for readability */
+    /* Limit maximum width for readability on large screens */
     max-width: 50rem;
-    /* Center and space vertically */
+    /* Center the container and add outer spacing */
     margin: 1.25rem auto;
-    /* Inner padding around content */
+    /* Add inner padding around content */
     padding: 1.25rem;
-    /* White card background */
+    /* Use a white background for a clean card look */
     background-color: white;
-    /* Subtle shadow for depth */
+    /* Add a soft drop shadow for depth */
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 }
 
-/* Space under the form area */
+/* Add spacing beneath the trivia form to separate it from the table */
 #trivia-form {
-    /* Margin to separate from table */
+    /* Provide space below the form area */
     margin-bottom: 1.875rem;
 }
 
-/* Style for each dynamic question block */
+/* Style each question block that will be inserted dynamically */
 #question-container > div {
-    /* Inner padding for readability */
+    /* Provide interior padding for comfortable reading */
     padding: 0.9375rem;
-    /* Space between question blocks */
+    /* Separate questions with vertical spacing */
     margin-bottom: 0.625rem;
-    /* Light border to frame content */
+    /* Add a light border to delineate the block */
     border: 1px solid #ddd;
-    /* Slight rounding of corners */
+    /* Slightly round the corners of the block */
     border-radius: 0.3125rem;
-    /* Very light background */
+    /* Use a very light background for question blocks */
     background-color: #fafafa;
 }
 
-/* Style for the question text */
+/* Style the paragraph that contains each question text */
 #question-container p {
-    /* Remove top margin, keep bottom */
+    /* Remove default top margin and keep a bit below */
     margin: 0 0 0.625rem 0;
-    /* Slight emphasis */
+    /* Make the question text slightly bolder */
     font-weight: 500;
 }
 
-/* Answer labels stack vertically and are clickable */
+/* Make labels block‑level so each answer is easy to tap/click */
 label {
-    /* Make each option a block */
+    /* Force each label onto its own line */
     display: block;
-    /* Space between options */
+    /* Add small vertical spacing between labels */
     margin: 0.3125rem 0;
-    /* Show pointer on hover */
+    /* Indicate interactivity on hover */
     cursor: pointer;
 }
 
-/* Space radio control from label text */
+/* Add spacing between radio inputs and their label text */
 input[type="radio"] {
-    /* Right margin after radio */
+    /* Push the label text away from the radio control */
     margin-right: 0.625rem;
 }
 
-/* Style for the player name input */
+/* Style the username text input field */
 #username {
-    /* Padding for typing comfort */
+    /* Add interior padding for comfortable typing */
     padding: 0.625rem;
-    /* Light outline */
+    /* Draw a light border around the input */
     border: 1px solid #ddd;
-    /* Rounded corners */
+    /* Slightly round the input’s corners */
     border-radius: 0.3125rem;
-    /* Space below input */
+    /* Add space below the input before the button */
     margin-bottom: 0.9375rem;
 }
 
-/* Base look for buttons */
+/* Provide consistent base styles for all buttons */
 button {
-    /* White text for contrast */
+    /* Use white text for strong contrast */
     color: white;
-    /* Remove default border */
+    /* Remove default borders for a clean look */
     border: none;
-    /* Comfortable hit area */
+    /* Add padding to increase the hit area */
     padding: 0.625rem 1.25rem;
-    /* Rounded corners */
+    /* Slightly round the button corners */
     border-radius: 0.3125rem;
-    /* Pointer cursor on hover */
+    /* Show a pointer cursor when hovering over buttons */
     cursor: pointer;
-    /* Readable size */
+    /* Use a readable base font size */
     font-size: 1rem;
 }
 
-/* Primary submit button color */
+/* Style the primary submit (Finish Game) button */
 #submit-game {
-    /* Purple background for primary action */
+    /* Use a purple background for the primary action */
     background-color: #6200ea;
 }
 
-/* Darker purple on hover */
+/* Darken the submit button on hover to provide feedback */
 #submit-game:hover {
-    /* Hover shade */
+    /* Apply a darker purple on hover */
     background-color: #3700b3;
 }
 
-/* Reset/start-over button color */
+/* Style the New Player button to stand out as a “reset/start over” action */
 #new-player {
-    /* Red background for strong action */
+    /* Use a red background to indicate a disruptive/change action */
     background-color: #ff0000;
 }
 
-/* Darker red on hover */
+/* Darken the New Player button on hover for interactivity feedback */
 #new-player:hover {
-    /* Hover shade */
+    /* Apply a darker red on hover */
     background-color: #e50000;
 }
 
-/* Full-width table with clean grid */
+/* Style the score table so it uses the full width and clean borders */
 #score-table {
-    /* Use entire container width */
+    /* Stretch the table to the container width */
     width: 100%;
-    /* Collapse borders to single grid lines */
+    /* Collapse borders so adjacent cells share borders */
     border-collapse: collapse;
-    /* Margin above table */
+    /* Add a top margin to separate from content above */
     margin-top: 1.25rem;
 }
 
-/* Borders and padding for table cells */
+/* Style header and data cells with borders and padding */
 #score-table th,
 #score-table td {
-    /* Light border around cells */
+    /* Draw a light border around each cell */
     border: 1px solid #ddd;
-    /* Comfortable padding */
+    /* Add padding inside cells for readability */
     padding: 0.75rem;
-    /* Standard left alignment */
+    /* Left-align text for a standard table look */
     text-align: left;
 }
 
-/* Button that clears saved scores */
+/* Style the Clear Scores button added earlier */
 #clear-scores {
-    /* Neutral dark color for data action */
+    /* Use a neutral dark gray to signal a data-management action */
     background-color: #444;
-    /* Space above the button */
+    /* Add space above to separate it from the table */
     margin-top: 0.75rem;
 }
 
-/* Darker hover color for clear button */
+/* Darken the Clear Scores button on hover for feedback */
 #clear-scores:hover {
-    /* Hover shade */
+    /* Use a deeper gray on hover */
     background-color: #222;
 }
 
-/* Result banner base styles (from Commit 7) */
-#result-banner {
-    /* Space above banner */
+/* Add a visual summary box for the final score (Commit 7) */
+#result-summary {
+    /* Add spacing above to separate it from the New Player button */
     margin-top: 0.75rem;
-    /* Inner padding */
+    /* Add internal padding for readability */
     padding: 0.75rem;
-    /* Rounded corners */
-    border-radius: 0.3125rem;
-    /* Slight border for framing */
-    border: 1px solid #ddd;
-    /* Emphasize text a bit */
-    font-weight: 600;
-}
-
-/* Positive banner color */
-.result-good {
-    /* Light green background */
-    background-color: #e8f5e9;
-    /* Dark green text */
-    color: #1b5e20;
-}
-
-/* Okay banner color */
-.result-ok {
-    /* Light amber background */
-    background-color: #fff8e1;
-    /* Brown text */
-    color: #6d4c41;
-}
-
-/* Low banner color */
-.result-bad {
-    /* Light red background */
-    background-color: #ffebee;
-    /* Dark red text */
-    color: #b71c1c;
-}
-
-/* Top score summary box (added in Commit 9) */
-#top-score {
-    /* Space above the summary box */
-    margin-top: 0.75rem;
-    /* Inner padding for readability */
-    padding: 0.5rem 0.75rem;
-    /* Soft blue background to distinguish summary */
+    /* Use a calm blue-tinted background to indicate information */
     background-color: #e9f3ff;
-    /* Light border for separation */
+    /* Add a light border to delineate the box */
     border: 1px solid #cfe3ff;
-    /* Rounded corners for cohesion with card */
+    /* Slightly round the corners for a card-like feel */
     border-radius: 0.3125rem;
-    /* Darker text color for contrast */
+    /* Use a darker text color for contrast */
     color: #183b5b;
-    /* Slightly bolder text */
+    /* Increase font size slightly for emphasis */
+    font-size: 1rem;
+}
+
+/* Highlight the correct answer label after submit (Commit 7) */
+label.correct {
+    /* Use a subtle green background to indicate correctness */
+    background-color: #e7f7e7;
+    /* Add a light green border to reinforce the visual cue */
+    border: 1px solid #bfe6bf;
+    /* Slightly round the label edges for consistency */
+    border-radius: 0.25rem;
+    /* Add small padding inside the label */
+    padding: 0.25rem 0.5rem;
+}
+
+/* Highlight the selected incorrect answer label after submit (Commit 7) */
+label.incorrect {
+    /* Use a subtle red background to indicate an incorrect choice */
+    background-color: #fdeaea;
+    /* Add a light red border for clarity */
+    border: 1px solid #f5c2c2;
+    /* Slightly round the label edges for consistency */
+    border-radius: 0.25rem;
+    /* Add small padding inside the label */
+    padding: 0.25rem 0.5rem;
+}
+
+/* Add layout and spacing for the scoreboard control row (Commit 8) */
+#table-controls {
+    /* Separate the controls from the summary area above */
+    margin-top: 1rem;
+    /* Use flex layout so label and select sit nicely in a row */
+    display: flex;
+    /* Align items vertically centered within the row */
+    align-items: center;
+    /* Add a small gap between label and select */
+    gap: 0.5rem;
+}
+
+/* Style the label inside the control row for readability (Commit 8) */
+#table-controls label {
+    /* Slightly emphasize the label text */
+    font-weight: 500;
+    /* Use normal text color for consistency with body */
+    color: #333;
+}
+
+/* Style the select input for a clean look consistent with the page (Commit 8) */
+#table-controls select {
+    /* Add comfortable padding inside the control */
+    padding: 0.4rem 0.6rem;
+    /* Match the input’s subtle border style */
+    border: 1px solid #ddd;
+    /* Slightly round the corners for consistency with other elements */
+    border-radius: 0.3125rem;
+    /* Set a readable font size */
+    font-size: 1rem;
+    /* Use a white background to match inputs */
+    background-color: #fff;
+    /* Use a standard text color */
+    color: #333;
+}
+
+/* Top Score summary box (Commit 9) */
+#top-score {
+    /* Add space above the summary box */
+    margin-top: 0.75rem;
+    /* Provide inner padding for readability */
+    padding: 0.5rem 0.75rem;
+    /* Use a soft green-tinted background to celebrate top performance */
+    background-color: #edf9ef;
+    /* Add a light border to delineate the summary */
+    border: 1px solid #cfe9d4;
+    /* Round the corners for consistency with other cards */
+    border-radius: 0.3125rem;
+    /* Use a darker text color for contrast */
+    color: #1e4620;
+    /* Slightly bolder text for emphasis */
     font-weight: 600;
 }
 
 /* Highlight entire top rows in the table (Commit 9) */
 #score-table tr.top td {
-    /* Very light green to indicate best results */
+    /* Very light green shading to indicate best results */
     background-color: #f1fbea;
 }
